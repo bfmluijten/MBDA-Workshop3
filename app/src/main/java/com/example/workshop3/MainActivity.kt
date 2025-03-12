@@ -5,6 +5,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -53,7 +55,7 @@ class MainActivity : ComponentActivity() {
                             onDismissRequest = { showDialog = false },
                             confirmButton = {
                                 TextButton(onClick = {
-                                    showDialog = false/* handle confirmation */
+                                    showDialog = false
                                 }) { Text("Confirm") }
                             },
                             dismissButton = {
@@ -63,8 +65,8 @@ class MainActivity : ComponentActivity() {
                             })
                     }
                     Column(modifier = Modifier.padding(innerPadding)) {
+                        var showRed by remember { mutableStateOf(false) }
                         var showGreen by remember { mutableStateOf(false) }
-                        var showYellow by remember { mutableStateOf(false) }
                         Row {
                             Button(onClick = {
                                 showDialog = true
@@ -86,34 +88,40 @@ class MainActivity : ComponentActivity() {
                                     expanded = false
                                 }) {
                                     DropdownMenuItem(text = {
+                                        Text(if (showRed) "Hide Red" else "Show Red")
+                                    }, onClick = {
+                                        expanded = false
+                                        showRed = !showRed
+                                    })
+                                    DropdownMenuItem(text = {
                                         Text(if (showGreen) "Hide Green" else "Show Green")
                                     }, onClick = {
                                         expanded = false
                                         showGreen = !showGreen
                                     })
-                                    DropdownMenuItem(text = {
-                                        Text(if (showYellow) "Hide Yellow" else "Show Yellow")
-                                    }, onClick = {
-                                        expanded = false
-                                        showYellow = !showYellow
-                                    })
                                 }
                             }
                         }
-                        AnimatedVisibility(showGreen) {
+                        AnimatedVisibility(
+                            showRed
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(200.dp)
+                                    .background(Color.Red)
+                            ) {}
+                        }
+                        AnimatedVisibility(
+                            showGreen,
+                            enter = scaleIn(),
+                            exit = scaleOut()
+                        ) {
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(200.dp)
                                     .background(Color.Green)
-                            ) {}
-                        }
-                        AnimatedVisibility(showYellow) {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(200.dp)
-                                    .background(Color.Yellow)
                             ) {}
                         }
                     }
