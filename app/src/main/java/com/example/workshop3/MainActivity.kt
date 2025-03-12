@@ -5,10 +5,14 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
@@ -28,7 +32,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.example.workshop3.ui.theme.Workshop3Theme
 
 class MainActivity : ComponentActivity() {
@@ -56,39 +62,59 @@ class MainActivity : ComponentActivity() {
                                 }) { Text("Dismiss") }
                             })
                     }
-                    Row(modifier = Modifier.padding(innerPadding)) {
-                        Button(onClick = {
-                            showDialog = true
-                        }) {
-                            Text("Show Dialog")
+                    Column(modifier = Modifier.padding(innerPadding)) {
+                        var showGreen by remember { mutableStateOf(false) }
+                        var showYellow by remember { mutableStateOf(false) }
+                        Row {
+                            Button(onClick = {
+                                showDialog = true
+                            }) {
+                                Text("Show Dialog")
+                            }
+                            Spacer(modifier = Modifier.weight(1.0f))
+                            var expanded by remember { mutableStateOf(false) }
+                            Box {
+                                IconButton(onClick = {
+                                    expanded = !expanded
+                                }) {
+                                    Icon(
+                                        Icons.Default.MoreVert,
+                                        contentDescription = ""
+                                    )
+                                }
+                                DropdownMenu(expanded = expanded, onDismissRequest = {
+                                    expanded = false
+                                }) {
+                                    DropdownMenuItem(text = {
+                                        Text(if (showGreen) "Hide Green" else "Show Green")
+                                    }, onClick = {
+                                        expanded = false
+                                        showGreen = !showGreen
+                                    })
+                                    DropdownMenuItem(text = {
+                                        Text(if (showYellow) "Hide Yellow" else "Show Yellow")
+                                    }, onClick = {
+                                        expanded = false
+                                        showYellow = !showYellow
+                                    })
+                                }
+                            }
                         }
-                        Spacer(modifier = Modifier.weight(1.0f))
-                        var expanded by remember { mutableStateOf(false) }
-                        Box {
-                            IconButton(onClick = {
-                                expanded = !expanded
-                            }) {
-                                Icon(
-                                    Icons.Default.MoreVert,
-                                    contentDescription = ""
-                                )
-                            }
-                            DropdownMenu(expanded = expanded, onDismissRequest = {
-                                expanded = false
-                            }) {
-                                DropdownMenuItem(text = {
-                                    Text("Option 1")
-                                }, onClick = {
-                                    expanded = false
-                                    /* Do something... */
-                                })
-                                DropdownMenuItem(text = {
-                                    Text("Option 2")
-                                }, onClick = {
-                                    expanded = false
-                                    /* Do something... */
-                                })
-                            }
+                        AnimatedVisibility(showGreen) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(200.dp)
+                                    .background(Color.Green)
+                            ) {}
+                        }
+                        AnimatedVisibility(showYellow) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(200.dp)
+                                    .background(Color.Yellow)
+                            ) {}
                         }
                     }
                 }
