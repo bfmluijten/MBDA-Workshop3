@@ -4,13 +4,21 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -48,11 +56,40 @@ class MainActivity : ComponentActivity() {
                                 }) { Text("Dismiss") }
                             })
                     }
-                    Button(modifier = Modifier.padding(innerPadding),
-                        onClick = {
+                    Row(modifier = Modifier.padding(innerPadding)) {
+                        Button(onClick = {
                             showDialog = true
                         }) {
-                        Text("Show Dialog")
+                            Text("Show Dialog")
+                        }
+                        Spacer(modifier = Modifier.weight(1.0f))
+                        var expanded by remember { mutableStateOf(false) }
+                        Box {
+                            IconButton(onClick = {
+                                expanded = !expanded
+                            }) {
+                                Icon(
+                                    Icons.Default.MoreVert,
+                                    contentDescription = ""
+                                )
+                            }
+                            DropdownMenu(expanded = expanded, onDismissRequest = {
+                                expanded = false
+                            }) {
+                                DropdownMenuItem(text = {
+                                    Text("Option 1")
+                                }, onClick = {
+                                    expanded = false
+                                    /* Do something... */
+                                })
+                                DropdownMenuItem(text = {
+                                    Text("Option 2")
+                                }, onClick = {
+                                    expanded = false
+                                    /* Do something... */
+                                })
+                            }
+                        }
                     }
                 }
             }
