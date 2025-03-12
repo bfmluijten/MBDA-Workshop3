@@ -33,17 +33,27 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.workshop3.ui.theme.Workshop3Theme
 
 class MainActivity : ComponentActivity() {
+    lateinit var navController: NavHostController
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+            navController = rememberNavController()
             Workshop3Theme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     var showDialog by remember { mutableStateOf(false) }
@@ -112,6 +122,20 @@ class MainActivity : ComponentActivity() {
                                     .background(Color.Red)
                             ) {}
                         }
+                        NavHost(
+                            navController = navController,
+                            startDestination = "items/0"
+                        ) {
+                            composable(
+                                route = "items/{id}",
+                                arguments = listOf(navArgument("id") {
+                                    type = NavType.IntType
+                                })
+                            ) { navBackStackEntry ->
+                                val id = navBackStackEntry.arguments?.getInt("id") ?: 0
+                                NavigationContent(id)
+                            }
+                        }
                         AnimatedVisibility(
                             showGreen,
                             enter = scaleIn(),
@@ -126,6 +150,24 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 }
+            }
+        }
+    }
+
+    @Composable
+    fun NavigationContent(id: Int) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(200.dp)
+                .background(Color.Yellow),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(modifier = Modifier.weight(1.0f), text = "Content for items/$id")
+            Button(onClick = {
+                navController.navigate("items/${id + 1}")
+            }) {
+                Text("Next item")
             }
         }
     }
