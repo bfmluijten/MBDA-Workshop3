@@ -87,7 +87,7 @@ class MainActivity : ComponentActivity() {
                     ) {
                         var showRed by remember { mutableStateOf(false) }
                         var showGreen by remember { mutableStateOf(false) }
-                        Row(modifier = Modifier.padding(bottom = 20.dp)) {
+                        Row {
                             Button(onClick = {
                                 showDialog = true
                             }) {
@@ -122,6 +122,23 @@ class MainActivity : ComponentActivity() {
                                 }
                             }
                         }
+                        NavHost(
+                            modifier = Modifier
+                                .height(300.dp)
+                                .padding(top = 10.dp),
+                            navController = navController,
+                            startDestination = "items/home"
+                        ) {
+                            composable(
+                                route = "items/{uri}",
+                                arguments = listOf(navArgument("uri") {
+                                    type = NavType.StringType
+                                })
+                            ) { navBackStackEntry ->
+                                val uri = navBackStackEntry.arguments?.getString("uri") ?: "home"
+                                NavigationContent(uri)
+                            }
+                        }
                         AnimatedVisibility(
                             showRed
                         ) {
@@ -143,20 +160,6 @@ class MainActivity : ComponentActivity() {
                                     .height(200.dp)
                                     .background(Color.Green)
                             ) {}
-                        }
-                        NavHost(
-                            navController = navController,
-                            startDestination = "items/home"
-                        ) {
-                            composable(
-                                route = "items/{uri}",
-                                arguments = listOf(navArgument("uri") {
-                                    type = NavType.StringType
-                                })
-                            ) { navBackStackEntry ->
-                                val uri = navBackStackEntry.arguments?.getString("uri") ?: "home"
-                                NavigationContent(uri)
-                            }
                         }
                     }
                 }
