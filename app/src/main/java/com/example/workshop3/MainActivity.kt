@@ -201,7 +201,7 @@ class MainActivity : ComponentActivity() {
                 }
                 Spacer(modifier = Modifier.weight(1.0f))
                 Button(onClick = {
-                    navController.popBackStack()
+                    navController.navigateUp()
                 }) {
                     Text("Back")
                 }
