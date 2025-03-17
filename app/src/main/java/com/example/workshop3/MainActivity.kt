@@ -20,7 +20,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -125,6 +129,7 @@ class MainActivity : ComponentActivity() {
                         NavHost(
                             modifier = Modifier
                                 .height(300.dp)
+                                .fillMaxWidth()
                                 .padding(top = 10.dp),
                             navController = navController,
                             startDestination = "items/home"
@@ -137,6 +142,15 @@ class MainActivity : ComponentActivity() {
                             ) { navBackStackEntry ->
                                 val uri = navBackStackEntry.arguments?.getString("uri") ?: "home"
                                 NavigationContent(uri)
+                            }
+                            composable(
+                                route = "friends/{uri}",
+                                arguments = listOf(navArgument("uri") {
+                                    type = NavType.StringType
+                                })
+                            ) { navBackStackEntry ->
+                                val uri = navBackStackEntry.arguments?.getString("uri") ?: "home"
+                                NavigationContent(uri, friends = true)
                             }
                         }
                         AnimatedVisibility(
@@ -168,42 +182,63 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    fun NavigationContent(uri: String) {
+    fun NavigationContent(uri: String, friends: Boolean = false) {
         val items = mapOf(
             "Pikachu" to R.drawable.pikachu,
             "Dragonite" to R.drawable.dragonite,
             "Bulbasaur" to R.drawable.bulbasaur
         )
-        if (uri == "home") {
-            Column {
-                items.map {
-                    Row(modifier = Modifier.clickable(onClick = {
-                        navController.navigate("items/${it.key}")
-                    }), verticalAlignment = Alignment.CenterVertically) {
-                        Image(painter = painterResource(it.value), contentDescription = "")
-                        Text(it.key)
-                    }
-                }
-            }
-        } else {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Image(
-                        modifier = Modifier
-                            .width(200.dp)
-                            .height(200.dp),
-                        painter = painterResource(items[uri] ?: 0),
-                        contentDescription = ""
-                    )
-                    Text(uri, fontSize = 30.sp)
-                }
-                Spacer(modifier = Modifier.weight(1.0f))
-                Button(onClick = {
+        Column {
+            IconButton(
+                enabled = uri != "home",
+                onClick = {
                     navController.navigateUp()
                 }) {
-                    Text("Back")
+                Icon(
+                    Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = ""
+                )
+            }
+            if (uri == "home" || friends) {
+                Column {
+                    items.map {
+                        if (it.key != uri) {
+                            Row(modifier = Modifier.clickable(onClick = {
+                                navController.navigate("items/${it.key}")
+                            }), verticalAlignment = Alignment.CenterVertically) {
+                                Image(painter = painterResource(it.value), contentDescription = "")
+                                Text(it.key)
+                            }
+                        }
+                    }
+                }
+            } else {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Image(
+                            modifier = Modifier
+                                .width(200.dp)
+                                .height(200.dp),
+                            painter = painterResource(items[uri] ?: 0),
+                            contentDescription = ""
+                        )
+                        Text(uri, fontSize = 30.sp)
+                    }
+                    Spacer(modifier = Modifier.weight(1.0f))
+                    Button(
+                        onClick = {
+                            navController.navigate("friends/$uri")
+                        }) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text("Friends")
+                            Icon(
+                                Icons.AutoMirrored.Filled.ArrowForward,
+                                contentDescription = ""
+                            )
+                        }
+                    }
                 }
             }
         }
